@@ -9,36 +9,37 @@ interface BotaoProps {
 
 export default function Index() {
   const [expressao, setExpressao] = useState<string>('');
-  const [resultado, setResultado] = useState<string>('');
+  const [resultado, setResultado] = useState<string>('0');
 
-  const operadores = ['+', '-', '*', '/', '.'];
+  const operadores = ['+', '-', 'x', '÷', '.'];
 
-  // ✅ corrigido (sem "=" duplicado)
   const linhasDeBotoes = [
-    ['C', '(', ')', '/'],
-    ['7', '8', '9', '*'],
+    ['C', '(', ')', '÷'],
+    ['7', '8', '9', 'x'],
     ['4', '5', '6', '-'],
     ['1', '2', '3', '+'],
-    ['0', '.', '=']
+    ['0', '.', '⌫', '=']
   ];
 
   const obterCorFundo = (botao: string): string => {
-    if (botao === '=') return '#00ffcc'; // verde neon
-    if (botao === 'C') return '#ff3b3b'; // vermelho
-    if (['(', ')', '/', '*', '+', '-'].includes(botao)) return '#a855f7'; // roxo
-    return '#2a2a3d'; // números
+    if (botao === 'C') return '#8A2BE2';
+    if (botao === '⌫') return '#8A2BE2';
+    if (['+', '-', 'x', '÷', '='].includes(botao)) return '#ff9500';
+    if (['(', ')', '.'].includes(botao)) return '#555555';
+    return '#333333';
   };
 
   const lidarComToque = (valor: string): void => {
     if (valor === 'C') {
       setExpressao('');
-      setResultado('');
+      setResultado('0');
+    } else if (valor === '⌫') {
+      const novaExpressao = expressao.slice(0, -1);
+      setExpressao(novaExpressao);
+      setResultado(novaExpressao.length > 0 ? novaExpressao : '0');
     } else if (valor === '=') {
       try {
-        const expressaoFormatada = expressao
-          .replace(/x/g, '*')
-          .replace(/,/g, '.');
-
+        const expressaoFormatada = expressao.replace(/x/g, '*').replace(/÷/g, '/');
         const resultadoCalculado = eval(expressaoFormatada);
 
         setResultado(String(resultadoCalculado));
@@ -55,44 +56,34 @@ export default function Index() {
         if (operadores.includes(ultimoCaractere)) {
           const novaExpressao = expressao.slice(0, -1) + valor;
           setExpressao(novaExpressao);
+          setResultado(novaExpressao);
           return;
         }
       }
 
       const novaExpressao = expressao + valor;
       setExpressao(novaExpressao);
+      setResultado(novaExpressao);
     }
   };
 
-  const Botao: React.FC<BotaoProps> = ({
-    titulo,
-    corFundo = '#333',
-    corTexto = '#fff'
-  }) => (
+  const Botao: React.FC<BotaoProps> = ({ titulo, corFundo = '#333333', corTexto = '#ffffff' }) => (
     <TouchableOpacity
       style={[styles.botao, { backgroundColor: corFundo }]}
       onPress={() => lidarComToque(titulo)}
     >
-      <Text style={[styles.textoBotao, { color: corTexto }]}>
-        {titulo}
-      </Text>
+      <Text style={[styles.textoBotao, { color: corTexto }]}>{titulo}</Text>
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      
-      {/* DISPLAY */}
       <View style={styles.displayContainer}>
-        <Text style={styles.textoExpressao}>
-          {expressao || '0'}
-        </Text>
-        <Text style={styles.textoResultado}>
+        <Text style={styles.textoDisplay} numberOfLines={1} adjustsFontSizeToFit>
           {resultado}
         </Text>
       </View>
 
-      {/* TECLADO */}
       <View style={styles.tecladoContainer}>
         {linhasDeBotoes.map((linha, indexLinha) => (
           <View key={indexLinha} style={styles.linha}>
@@ -106,7 +97,6 @@ export default function Index() {
           </View>
         ))}
       </View>
-
     </SafeAreaView>
   );
 }
@@ -114,51 +104,37 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1e1e2f',
+    backgroundColor: '#000000',
   },
-
   displayContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
     padding: 20,
   },
-
-  textoExpressao: {
-    fontSize: 28,
-    color: '#aaa',
+  textoDisplay: {
+    fontSize: 70,
+    color: '#ffffff',
+    fontWeight: '300',
   },
-
-  textoResultado: {
-    fontSize: 52,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-
   tecladoContainer: {
-    padding: 10,
+    paddingBottom: 30,
+    paddingHorizontal: 10,
   },
-
   linha: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
   },
-
   botao: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
+    width: 85,
+    height: 70,
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
   },
-
   textoBotao: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '400',
   },
 });
