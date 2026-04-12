@@ -1,74 +1,76 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
-import Botao from '../components/botao';
+import React, { useState } from "react";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import Botao from "../components/botao";
 
 export default function Index() {
-  const [expressao, setExpressao] = useState<string>('');
-  const [resultado, setResultado] = useState<string>('');
+  const [expressao, setExpressao] = useState<string>("");
+  const [resultado, setResultado] = useState<string>("0");
 
-  const operadores = ['+', '-', '*', '/', '.'];
+  const operadores = ["+", "-", "x", "÷", "."];
 
   const linhasDeBotoes = [
-    ['C', '(', ')', '/'],
-    ['7', '8', '9', '*'],
-    ['4', '5', '6', '-'],
-    ['1', '2', '3', '+'],
-    ['0', '.','⌫', '=']
+    ["C", "(", ")", "÷"],
+    ["7", "8", "9", "x"],
+    ["4", "5", "6", "-"],
+    ["1", "2", "3", "+"],
+    ["0", ".", "⌫", "="],
   ];
 
   const obterCorFundo = (botao: string): string => {
-    if (botao === '=') return '#00ffcc';
-    if (botao === 'C') return '#ff3b3b';
-    if (botao === '⌫') return '#f59e0b';
-    if (['(', ')', '/', '*', '+', '-'].includes(botao)) return '#a855f7';
-    return '#2a2a3d';
+    if (botao === "=") return "#00ffcc";
+    if (botao === "C") return "#ff3b3b";
+    if (botao === "⌫") return "#f59e0b";
+    if (["(", ")", "/", "*", "+", "-"].includes(botao)) return "#a855f7";
+    return "#2a2a3d";
   };
 
   const lidarComToque = (valor: string): void => {
-    if (valor === 'C') {
-      setExpressao('');
-      setResultado('');
-    } else if (valor === '⌫') {
+    if (valor === "C") {
+      setExpressao("");
+      setResultado("");
+    } else if (valor === "⌫") {
       const novaExpressao = expressao.slice(0, -1);
       setExpressao(novaExpressao);
-    } else if (valor === '=') {
+    } else if (valor === "=") {
       try {
         const expressaoFormatada = expressao
-          .replace(/x/g, '*')
-          .replace(/,/g, '.');
-
+          .replace(/x/g, "*")
+          .replace(/÷/g, "/");
         const resultadoCalculado = eval(expressaoFormatada);
 
         setResultado(String(resultadoCalculado));
         setExpressao(String(resultadoCalculado));
       } catch (e) {
-        setResultado('Erro');
+        setResultado("Erro");
       }
     } else {
       if (operadores.includes(valor)) {
-        if (expressao === '' && valor !== '-') return;
+        if (expressao === "" && valor !== "-") return;
 
         const ultimoCaractere = expressao.slice(-1);
 
         if (operadores.includes(ultimoCaractere)) {
           const novaExpressao = expressao.slice(0, -1) + valor;
           setExpressao(novaExpressao);
+          setResultado(novaExpressao);
           return;
         }
       }
 
       const novaExpressao = expressao + valor;
       setExpressao(novaExpressao);
+      setResultado(novaExpressao);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.displayContainer}>
-        <Text style={styles.textoExpressao}>
-          {expressao || '0'}
-        </Text>
-        <Text style={styles.textoResultado}>
+        <Text
+          style={styles.textoDisplay}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
           {resultado}
         </Text>
       </View>
@@ -94,34 +96,26 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1e1e2f',
+    backgroundColor: "#000000",
   },
-
   displayContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
     padding: 20,
   },
-
-  textoExpressao: {
-    fontSize: 28,
-    color: '#aaa',
+  textoDisplay: {
+    fontSize: 70,
+    color: "#ffffff",
+    fontWeight: "300",
   },
-
-  textoResultado: {
-    fontSize: 52,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-
   tecladoContainer: {
-    padding: 10,
+    paddingBottom: 30,
+    paddingHorizontal: 10,
   },
-
   linha: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
   },
 });
