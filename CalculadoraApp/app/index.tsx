@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
-
-interface BotaoProps {
-  titulo: string;
-  corFundo?: string;
-  corTexto?: string;
-}
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import Botao from '../components/botao';
 
 export default function Index() {
   const [expressao, setExpressao] = useState<string>('');
@@ -13,26 +8,29 @@ export default function Index() {
 
   const operadores = ['+', '-', '*', '/', '.'];
 
-  // ✅ corrigido (sem "=" duplicado)
   const linhasDeBotoes = [
     ['C', '(', ')', '/'],
     ['7', '8', '9', '*'],
     ['4', '5', '6', '-'],
     ['1', '2', '3', '+'],
-    ['0', '.', '=']
+    ['0', '.','⌫', '=']
   ];
 
   const obterCorFundo = (botao: string): string => {
-    if (botao === '=') return '#00ffcc'; // verde neon
-    if (botao === 'C') return '#ff3b3b'; // vermelho
-    if (['(', ')', '/', '*', '+', '-'].includes(botao)) return '#a855f7'; // roxo
-    return '#2a2a3d'; // números
+    if (botao === '=') return '#00ffcc';
+    if (botao === 'C') return '#ff3b3b';
+    if (botao === '⌫') return '#f59e0b';
+    if (['(', ')', '/', '*', '+', '-'].includes(botao)) return '#a855f7';
+    return '#2a2a3d';
   };
 
   const lidarComToque = (valor: string): void => {
     if (valor === 'C') {
       setExpressao('');
       setResultado('');
+    } else if (valor === '⌫') {
+      const novaExpressao = expressao.slice(0, -1);
+      setExpressao(novaExpressao);
     } else if (valor === '=') {
       try {
         const expressaoFormatada = expressao
@@ -64,25 +62,8 @@ export default function Index() {
     }
   };
 
-  const Botao: React.FC<BotaoProps> = ({
-    titulo,
-    corFundo = '#333',
-    corTexto = '#fff'
-  }) => (
-    <TouchableOpacity
-      style={[styles.botao, { backgroundColor: corFundo }]}
-      onPress={() => lidarComToque(titulo)}
-    >
-      <Text style={[styles.textoBotao, { color: corTexto }]}>
-        {titulo}
-      </Text>
-    </TouchableOpacity>
-  );
-
   return (
     <SafeAreaView style={styles.container}>
-      
-      {/* DISPLAY */}
       <View style={styles.displayContainer}>
         <Text style={styles.textoExpressao}>
           {expressao || '0'}
@@ -92,7 +73,6 @@ export default function Index() {
         </Text>
       </View>
 
-      {/* TECLADO */}
       <View style={styles.tecladoContainer}>
         {linhasDeBotoes.map((linha, indexLinha) => (
           <View key={indexLinha} style={styles.linha}>
@@ -101,12 +81,12 @@ export default function Index() {
                 key={botao}
                 titulo={botao}
                 corFundo={obterCorFundo(botao)}
+                aoPressionar={lidarComToque}
               />
             ))}
           </View>
         ))}
       </View>
-
     </SafeAreaView>
   );
 }
@@ -143,22 +123,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
-  },
-
-  botao: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-
-  textoBotao: {
-    fontSize: 28,
-    fontWeight: 'bold',
   },
 });
