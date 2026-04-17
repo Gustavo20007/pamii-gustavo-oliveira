@@ -3,11 +3,11 @@ import { View, Text, Modal, StyleSheet } from "react-native";
 import BotaoCustom from "./BotaoCustom";
 
 interface Props {
-  aberto: boolean;
-  BotaoConfirmacao: string;
-  BotaoCancelar: string;
-  aoConfirmar: () => void;
-  aoCancelar: () => void;
+  aberto: boolean; // controla se o modal aparece
+  BotaoConfirmacao: string; // texto do botão confirmar
+  BotaoCancelar: string; // texto do botão cancelar
+  aoConfirmar: () => void; // ação ao confirmar
+  aoCancelar: () => void; // ação ao cancelar
 }
 
 export default function ModalCustom({
@@ -19,17 +19,20 @@ export default function ModalCustom({
 }: Props) {
   return (
     <Modal visible={aberto} transparent animationType="fade">
+      {/* fundo escuro */}
       <View style={styles.overlay}>
         <View style={styles.modal}>
           <Text style={styles.titulo}>Confirmação</Text>
           <Text>Deseja adicionar este item?</Text>
 
+          {/* botão confirmar */}
           <BotaoCustom
             cor="green"
             texto={BotaoConfirmacao}
             aoClicar={aoConfirmar}
           />
 
+          {/* botão cancelar */}
           <BotaoCustom
             cor="red"
             texto={BotaoCancelar}
@@ -44,7 +47,7 @@ export default function ModalCustom({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.5)", // fundo escuro
     justifyContent: "center",
     alignItems: "center"
   },

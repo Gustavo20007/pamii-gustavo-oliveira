@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 interface Props {
-  dados: string[];
+  dados: string[]; // lista de itens
 }
 
 export default function TabelaCustom({ dados }: Props) {
@@ -10,6 +10,7 @@ export default function TabelaCustom({ dados }: Props) {
     <View style={styles.tabela}>
       <Text style={styles.titulo}>Lista</Text>
 
+      {/* percorre a lista e mostra cada item */}
       {dados.map((item, index) => (
         <View key={index} style={styles.linha}>
           <Text>{item}</Text>

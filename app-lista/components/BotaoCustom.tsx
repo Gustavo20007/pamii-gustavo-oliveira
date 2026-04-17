@@ -2,16 +2,16 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 interface Props {
-  cor: string;
-  texto: string;
-  aoClicar: () => void;
+  cor: string; // cor do botão
+  texto: string; // texto exibido
+  aoClicar: () => void; // função ao clicar
 }
 
 export default function BotaoCustom({ cor, texto, aoClicar }: Props) {
   return (
     <TouchableOpacity
-      style={[styles.botao, { backgroundColor: cor }]}
-      onPress={aoClicar}
+      style={[styles.botao, { backgroundColor: cor }]} // aplica cor dinâmica
+      onPress={aoClicar} // executa função ao clicar
     >
       <Text style={styles.texto}>{texto}</Text>
     </TouchableOpacity>
