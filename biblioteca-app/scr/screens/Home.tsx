@@ -10,124 +10,106 @@ import {
   Alert
 } from 'react-native';
 
-// Importa banco
-import { db } from '../firebase/config';
 
-// Funções do Firestore
+// ====================================
+// CONTROLLERS
+// ====================================
+
 import {
-  collection,
-  addDoc,
-  getDocs
-} from 'firebase/firestore';
+  cadastrarLivro,
+  buscarLivros
+} from '../controllers/LivroController';
+
+import {
+  buscarCategorias
+} from '../controllers/CategoriaController';
+
 
 export default function Home() {
 
+  // ====================================
+  // STATES
+  // ====================================
+
   // Nome do livro
-  const [nomeLivro, setNomeLivro] = useState('');
+  const [nomeLivro, setNomeLivro] =
+    useState('');
 
   // Autor
-  const [autor, setAutor] = useState('');
+  const [autor, setAutor] =
+    useState('');
 
-  // Categorias vindas do Firebase
-  const [categorias, setCategorias] = useState<any[]>([]);
+  // Categorias
+  const [categorias, setCategorias] =
+    useState<any[]>([]);
 
   // Categoria selecionada
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState('');
+  const [
+    categoriaSelecionada,
+    setCategoriaSelecionada
+  ] = useState('');
 
   // Lista de livros
-  const [livros, setLivros] = useState<any[]>([]);
+  const [livros, setLivros] =
+    useState<any[]>([]);
 
-  // Carrega categorias e livros
+
+  // ====================================
+  // CARREGAR DADOS
+  // ====================================
+
   useEffect(() => {
-    buscarCategorias();
-    buscarLivros();
+
+    carregarCategorias();
+
+    carregarLivros();
+
   }, []);
 
-  // Buscar categorias
-  async function buscarCategorias() {
 
-    const querySnapshot = await getDocs(
-      collection(db, 'categorias')
-    );
+  // ====================================
+  // CONSULTAR CATEGORIAS
+  // ====================================
 
-    const lista: any[] = [];
+  async function carregarCategorias() {
 
-    querySnapshot.forEach((doc) => {
-      lista.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
+    const dados =
+      await buscarCategorias();
 
-    setCategorias(lista);
+    setCategorias(dados);
   }
 
-  // Buscar livros
-  async function buscarLivros() {
 
-    const querySnapshot = await getDocs(
-      collection(db, 'livros')
-    );
+  // ====================================
+  // CONSULTAR LIVROS
+  // ====================================
 
-    const lista: any[] = [];
+  async function carregarLivros() {
 
-    querySnapshot.forEach((doc) => {
-      lista.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
+    const dados =
+      await buscarLivros();
 
-    setLivros(lista);
+    setLivros(dados);
   }
 
-  // Cadastro do livro
-  async function cadastrarLivro() {
 
-    // ===== VALIDAÇÕES =====
+  // ====================================
+  // SALVAR LIVRO
+  // ====================================
 
-    // Verifica nome vazio
-    if (!nomeLivro.trim()) {
-      Alert.alert('Erro', 'Digite o nome do livro');
-      return;
-    }
-
-    // Verifica tamanho mínimo
-    if (nomeLivro.length < 3) {
-      Alert.alert(
-        'Erro',
-        'Nome precisa ter no mínimo 3 letras'
-      );
-      return;
-    }
-
-    // Verifica autor
-    if (!autor.trim()) {
-      Alert.alert('Erro', 'Digite o autor');
-      return;
-    }
-
-    // Verifica categoria
-    if (!categoriaSelecionada) {
-      Alert.alert(
-        'Erro',
-        'Selecione uma categoria'
-      );
-      return;
-    }
+  async function salvarLivro() {
 
     try {
 
-      // Salva no Firebase
-      await addDoc(collection(db, 'livros'), {
+      // Chama controller
+      await cadastrarLivro(
 
-        nome: nomeLivro,
-        autor: autor,
-        categoria: categoriaSelecionada,
+        nomeLivro,
 
-        // Data do cadastro
-        criadoEm: new Date()
-      });
+        autor,
+
+        categoriaSelecionada
+      );
 
       Alert.alert(
         'Sucesso',
@@ -139,60 +121,81 @@ export default function Home() {
       setAutor('');
 
       // Atualiza lista
-      buscarLivros();
+      carregarLivros();
 
-    } catch (error) {
+    } catch (error: any) {
 
       Alert.alert(
         'Erro',
-        'Falha ao cadastrar'
+        error.message
       );
     }
   }
+
+
+  // ====================================
+  // TELA
+  // ====================================
 
   return (
 
     <View style={styles.container}>
 
+      {/* TÍTULO */}
       <Text style={styles.titulo}>
         Cadastro de Livros
       </Text>
 
+
       {/* INPUT LIVRO */}
       <TextInput
         placeholder="Nome do livro"
+        placeholderTextColor="#999"
         value={nomeLivro}
         onChangeText={setNomeLivro}
         style={styles.input}
       />
 
+
       {/* INPUT AUTOR */}
       <TextInput
         placeholder="Autor"
+        placeholderTextColor="#999"
         value={autor}
         onChangeText={setAutor}
         style={styles.input}
       />
+
 
       {/* CATEGORIAS */}
       <Text style={styles.subtitulo}>
         Categorias
       </Text>
 
+
       <FlatList
         horizontal
         data={categorias}
         keyExtractor={(item) => item.id}
+        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
 
           <TouchableOpacity
+
             style={[
+
               styles.categoria,
-              categoriaSelecionada === item.nome &&
-                styles.categoriaAtiva
+
+              categoriaSelecionada ===
+                item.nome &&
+
+              styles.categoriaAtiva
             ]}
+
             onPress={() =>
-              setCategoriaSelecionada(item.nome)
+              setCategoriaSelecionada(
+                item.nome
+              )
             }
           >
 
@@ -204,10 +207,13 @@ export default function Home() {
         )}
       />
 
+
       {/* BOTÃO */}
       <TouchableOpacity
+
         style={styles.botao}
-        onPress={cadastrarLivro}
+
+        onPress={salvarLivro}
       >
 
         <Text style={styles.textoBotao}>
@@ -216,14 +222,19 @@ export default function Home() {
 
       </TouchableOpacity>
 
+
       {/* LISTA */}
       <Text style={styles.subtitulo}>
         Livros cadastrados
       </Text>
 
+
       <FlatList
+
         data={livros}
+
         keyExtractor={(item) => item.id}
+
         renderItem={({ item }) => (
 
           <View style={styles.card}>
@@ -232,11 +243,11 @@ export default function Home() {
               {item.nome}
             </Text>
 
-            <Text>
+            <Text style={styles.info}>
               Autor: {item.autor}
             </Text>
 
-            <Text>
+            <Text style={styles.info}>
               Categoria: {item.categoria}
             </Text>
 
@@ -247,6 +258,11 @@ export default function Home() {
     </View>
   );
 }
+
+
+// ====================================
+// ESTILOS
+// ====================================
 
 const styles = StyleSheet.create({
 
@@ -275,12 +291,13 @@ const styles = StyleSheet.create({
   subtitulo: {
     color: '#fff',
     fontSize: 20,
-    marginBottom: 10
+    marginBottom: 10,
+    marginTop: 10
   },
 
   categoria: {
     backgroundColor: '#333',
-    padding: 10,
+    padding: 12,
     borderRadius: 10,
     marginRight: 10
   },
@@ -290,7 +307,8 @@ const styles = StyleSheet.create({
   },
 
   textoCategoria: {
-    color: '#fff'
+    color: '#fff',
+    fontWeight: 'bold'
   },
 
   botao: {
@@ -303,7 +321,8 @@ const styles = StyleSheet.create({
 
   textoBotao: {
     color: '#fff',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    fontSize: 16
   },
 
   card: {
@@ -317,5 +336,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold'
+  },
+
+  info: {
+    color: '#ccc',
+    marginTop: 5
   }
 });
