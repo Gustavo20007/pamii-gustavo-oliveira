@@ -11,9 +11,8 @@ import {
 } from 'react-native';
 
 
-// ====================================
 // CONTROLLERS
-// ====================================
+
 
 import {
   cadastrarLivro,
@@ -27,9 +26,9 @@ import {
 
 export default function Home() {
 
-  // ====================================
+
   // STATES
-  // ====================================
+
 
   // Nome do livro
   const [nomeLivro, setNomeLivro] =
@@ -54,9 +53,8 @@ export default function Home() {
     useState<any[]>([]);
 
 
-  // ====================================
   // CARREGAR DADOS
-  // ====================================
+
 
   useEffect(() => {
 
@@ -67,9 +65,8 @@ export default function Home() {
   }, []);
 
 
-  // ====================================
   // CONSULTAR CATEGORIAS
-  // ====================================
+
 
   async function carregarCategorias() {
 
@@ -80,9 +77,8 @@ export default function Home() {
   }
 
 
-  // ====================================
   // CONSULTAR LIVROS
-  // ====================================
+ 
 
   async function carregarLivros() {
 
@@ -93,9 +89,8 @@ export default function Home() {
   }
 
 
-  // ====================================
   // SALVAR LIVRO
-  // ====================================
+
 
   async function salvarLivro() {
 
@@ -133,9 +128,9 @@ export default function Home() {
   }
 
 
-  // ====================================
+  
   // TELA
-  // ====================================
+
 
   return (
 

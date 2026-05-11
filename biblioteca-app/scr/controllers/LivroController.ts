@@ -1,13 +1,11 @@
-// ====================================
 // IMPORTA BANCO
-// ====================================
+
 
 import { db } from '../firebase/config';
 
 
-// ====================================
 // FIRESTORE
-// ====================================
+
 
 import {
   collection,
@@ -16,9 +14,8 @@ import {
 } from 'firebase/firestore';
 
 
-// ====================================
 // CADASTRAR LIVRO
-// ====================================
+
 
 export async function cadastrarLivro(
 
@@ -29,9 +26,8 @@ export async function cadastrarLivro(
   categoriaSelecionada: string
 ) {
 
-  // ========================
   // VALIDAÇÕES
-  // ========================
+
 
   // Nome vazio
   if (!nomeLivro.trim()) {
@@ -66,31 +62,24 @@ export async function cadastrarLivro(
   }
 
 
-  // ========================
   // CADASTRO FIREBASE
-  // ========================
+
 
   await addDoc(
 
     collection(db, 'livros'),
 
     {
-
       nome: nomeLivro,
-
       autor: autor,
-
       categoria: categoriaSelecionada,
-
       criadoEm: new Date()
     }
   );
 }
 
 
-// ====================================
 // CONSULTAR LIVROS
-// ====================================
 
 export async function buscarLivros() {
 
